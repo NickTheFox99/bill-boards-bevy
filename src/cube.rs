@@ -1,12 +1,11 @@
+use crate::player;
 use bevy::image::{ImageLoaderSettings, ImageSampler};
-use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 use parry2d::math::Point;
 use parry2d::na::{Isometry2, Vector2};
 use parry2d::query::{Ray, RayCast};
 use rand::random;
-use crate::player;
 
 #[derive(Component)]
 #[require(Mesh3d)]

@@ -5,17 +5,14 @@ mod player;
 mod cube;
 mod ui;
 
-use crate::display::RenderTex;
 use bevy::image::{ImageLoaderSettings, ImageSampler};
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
-use bevy::render::camera::RenderTarget;
 use bevy::render::render_resource::Extent3d;
 use bevy::window::{
     CursorGrabMode, EnabledButtons, PresentMode, PrimaryWindow, WindowMode, WindowTheme,
 };
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
-use std::f32::consts::FRAC_PI_4;
 
 #[derive(Resource)]
 struct GameSize(Extent3d);

@@ -1,24 +1,44 @@
 use crate::display::RenderTex;
-use crate::{player, GameSize, MainCamera};
+use crate::MainCamera;
+use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
-use bevy::{
-    core_pipeline::tonemapping::Tonemapping,
-    input::{keyboard::KeyCode, mouse::MouseMotion},
-    prelude::*,
-    window::{CursorGrabMode, PrimaryWindow},
-};
-use leafwing_input_manager::action_state::DualAxisData;
+use bevy::render::view::RenderLayers;
 use leafwing_input_manager::prelude::*;
-use parry2d::math::{Point, Translation};
-use parry2d::na::{Isometry, Vector2};
+use parry2d::math::Translation;
+use parry2d::na::Vector2;
 use parry2d::query;
-use parry2d::query::{PointQuery, Ray, RayCast, ShapeCastOptions};
 use parry2d::shape::{Ball, Cuboid};
 use std::f32::consts::{FRAC_PI_2, FRAC_PI_4};
-use std::ops::Div;
-use bevy::render::view::RenderLayers;
 
 const PLAYER_SPEED: f32 = 5.4;
+
+fn setup(mut commands: Commands, render_tex: Res<RenderTex>) {
+    commands.spawn((
+        Camera3d::default(),
+        Camera {
+            // clear_color: ClearColorConfig::None,
+            clear_color: ClearColorConfig::Custom(Color::srgb_u8(245, 245, 245)),
+            target: RenderTarget::Image(render_tex.get_handle().into()),
+            ..default()
+        },
+        Projection::from(PerspectiveProjection {
+            fov: FRAC_PI_4,
+            ..default()
+        }),
+        Transform::from_xyz(5.0, 1.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
+        Msaa::Off,
+        MainCamera,
+        Player::default(),
+        PlayerAction::default_input_map(),
+        RenderLayers::layer(0),
+    ));
+}
+
+pub fn plugin(app: &mut App) {
+    app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
+    app.add_systems(Startup, setup);
+    app.add_systems(Update, ((movement_input, physics).chain(), mouselook));
+}
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
 pub enum PlayerAction {
@@ -117,7 +137,7 @@ fn physics(
 ) {
     let (mut trans, player) = player_query.single_mut().unwrap();
 
-    if let Some(mut slide) = player.move_input {
+    if let Some(slide) = player.move_input {
         let p_shape = Ball::new(0.25);
         trans.translation += Vec3::new(slide.x, 0.0, slide.y);
 
@@ -140,32 +160,4 @@ fn physics(
             };
         }
     };
-}
-
-fn setup(mut commands: Commands, render_tex: Res<RenderTex>) {
-    commands.spawn((
-        Camera3d::default(),
-        Camera {
-            // clear_color: ClearColorConfig::None,
-            clear_color: ClearColorConfig::Custom(Color::srgb_u8(245, 245, 245)),
-            target: RenderTarget::Image(render_tex.get_handle().into()),
-            ..default()
-        },
-        Projection::from(PerspectiveProjection {
-            fov: FRAC_PI_4,
-            ..default()
-        }),
-        Transform::from_xyz(5.0, 1.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        Msaa::Off,
-        MainCamera,
-        Player::default(),
-        PlayerAction::default_input_map(),
-        RenderLayers::layer(0),
-    ));
-}
-
-pub fn plugin(app: &mut App) {
-    app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
-    app.add_systems(Startup, setup);
-    app.add_systems(Update, ((movement_input, physics).chain(), mouselook));
 }

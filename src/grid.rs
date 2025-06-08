@@ -2,7 +2,7 @@ use bevy::asset::RenderAssetUsages;
 use bevy::prelude::Mesh;
 use bevy::render::mesh::PrimitiveTopology;
 
-fn push_color_check(i: i32, mut colors: &mut Vec<[f32; 4]>){
+fn push_color_check(i: i32, colors: &mut Vec<[f32; 4]>){
     if i == 0 {
         colors.append(&mut vec![[0.5, 0.5, 0.5, 1.0], [0.5, 0.5, 0.5, 1.0]])
     } else {
