@@ -19,6 +19,7 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, mut materials
             target: RenderTarget::Image(render_tex.get_handle().into()),
             ..default()
         },
+        Msaa::Off,
         RenderLayers::layer(0),
         UICamera,
     ));
