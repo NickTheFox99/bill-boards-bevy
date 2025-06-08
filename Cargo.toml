@@ -1,0 +1,39 @@
+[package]
+name = "bill-boards-bevy"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+bevy = {version = "*", features = ["dynamic_linking"]}
+
+[dependencies]
+bevy = "*"
+bevy_embedded_assets = "*"
+parry2d = "*"
+rand = "*"
+leafwing-input-manager = "*"
+
+[lints.clippy]
+too_many_arguments = "allow"
+type_complexity = "allow"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1
+incremental = false
+debug = false
+
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld.exe"
+rustdocflags = ["-Clinker=rust-lld.exe"]
+rustflags = [
+    # "-Zshare-generics=n", # Off if dynamic linking
+    "-Zthreads=0",
+]
