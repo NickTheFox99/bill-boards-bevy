@@ -117,7 +117,7 @@ jobs:
 
   # Build for Windows
   release-windows:
-    runs-on: [windows-latest, self-hosted]
+    runs-on: windows-latest
 
     steps:
       - uses: olegtarasov/get-tag@v2.1.2
