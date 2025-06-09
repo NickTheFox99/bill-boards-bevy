@@ -12,6 +12,7 @@ bevy_embedded_assets = "*"
 parry2d = "*"
 rand = "*"
 leafwing-input-manager = "*"
+bevy_fix_cursor_unlock_web = "*"
 
 [lints.clippy]
 too_many_arguments = "allow"

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <style>
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <title>Game</title>
+</head>
+<body style="margin: 0;">
+<script type="module">
+    import './restart-audio-context.js'
+    import init from './bill-boards-bevy.js'
+
+    init().catch((error) => {
+        if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
+            throw error;
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -35,8 +35,6 @@ struct QuantizerMaterial {
     #[texture(0)]
     #[sampler(1)]
     texture: Option<Handle<Image>>,
-    #[uniform(2)]
-    levels: u32,
 }
 
 impl Material2d for QuantizerMaterial {
@@ -58,6 +56,7 @@ fn setup(
     mut images: ResMut<Assets<Image>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut q_material: ResMut<Assets<QuantizerMaterial>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
     game_size: Res<GameSize>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
@@ -103,13 +102,9 @@ fn setup(
         window.height() / game_size.0.height as f32,
     );
 
-    commands.spawn((
+    let mut display = commands.spawn((
         RenderQuad,
         Mesh2d(meshes.add(Rectangle::default())),
-        MeshMaterial2d(q_material.add(QuantizerMaterial {
-            texture: Some(render_tex.get_handle()),
-            levels: 4,
-        })),
         Transform {
             scale: Vec3::new(scale, scale, 0.0),
             rotation: Quat::IDENTITY,
@@ -117,6 +112,18 @@ fn setup(
         },
         RenderLayers::layer(1),
     ));
+    if cfg!(target_arch = "wasm32") {
+        display.insert(MeshMaterial2d(materials.add(ColorMaterial {
+            texture: Some(render_tex.get_handle()),
+            ..default()
+        })));
+        info!("Defaulting to ColorMaterial!");
+    } else {
+        display.insert(MeshMaterial2d(q_material.add(QuantizerMaterial {
+            texture: Some(render_tex.get_handle()),
+        })));
+        info!("Quantizer Material picked!");
+    }
 }
 
 fn resize(

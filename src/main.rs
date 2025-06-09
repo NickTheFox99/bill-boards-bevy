@@ -13,6 +13,7 @@ use bevy::window::{
     CursorGrabMode, EnabledButtons, PresentMode, PrimaryWindow, WindowMode, WindowTheme,
 };
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
+use bevy_fix_cursor_unlock_web::prelude::*;
 
 #[derive(Resource)]
 struct GameSize(Extent3d);
@@ -32,19 +33,19 @@ fn main() {
                     title: "Game".into(),
                     name: Some("game.app".into()),
                     resolution: (320., 240.).into(),
-                    present_mode: PresentMode::Mailbox,
-                    fit_canvas_to_parent: true,
+                    present_mode: PresentMode::Fifo,
                     window_theme: Some(WindowTheme::Light),
                     enabled_buttons: EnabledButtons {
                         minimize: false,
                         maximize: false,
                         close: false,
                     },
-                    mode: WindowMode::BorderlessFullscreen(MonitorSelection::Primary),
+                    // mode: WindowMode::BorderlessFullscreen(MonitorSelection::Primary),
                     ..default()
                 }),
                 ..default()
             }),
+            FixPointerUnlockPlugin,
             billboard::plugin,
             player::plugin,
             display::plugin,
@@ -63,6 +64,7 @@ fn main() {
             (
                 (toggle_grab_cursor)
                     .run_if(input_just_pressed(KeyCode::Tab)),
+                fullscreen.run_if(input_just_pressed(KeyCode::F11)),
                 quit_handler.run_if(input_just_pressed(KeyCode::Escape)),
             ),
         )
@@ -114,6 +116,11 @@ fn toggle_grab_cursor(mut window_query: Query<&mut Window, With<PrimaryWindow>>)
     let mut window = window_query.single_mut().unwrap();
     window.cursor_options.grab_mode = CursorGrabMode::Locked;
     window.cursor_options.visible = false;
+}
+
+fn fullscreen(mut window_query: Query<&mut Window, With<PrimaryWindow>>) {
+    let mut window = window_query.single_mut().unwrap();
+    window.mode = WindowMode::BorderlessFullscreen(MonitorSelection::Primary);
 }
 
 fn quit_handler(mut exit_writer: EventWriter<AppExit>) {

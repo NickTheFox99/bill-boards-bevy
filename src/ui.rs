@@ -29,6 +29,5 @@ fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, mut materials
             color: Color::srgba_u8(255, 0, 0, 255),
             ..default()
         })),
-        Transform::from_translation(Vec3::NEG_Z * 1.0),
     ));
 }
