@@ -9,10 +9,11 @@ bevy = {version = "*", features = ["dynamic_linking"]}
 [dependencies]
 bevy = "*"
 bevy_embedded_assets = "*"
-parry2d = "*"
 rand = "*"
 leafwing-input-manager = "*"
 bevy_fix_cursor_unlock_web = "*"
+parry3d = "0.21.1"
+parry2d = "0.21.1"
 
 [lints.clippy]
 too_many_arguments = "allow"

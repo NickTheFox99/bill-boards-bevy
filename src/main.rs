@@ -1,8 +1,8 @@
 mod billboard;
+mod cube;
 mod display;
 mod grid;
 mod player;
-mod cube;
 mod ui;
 
 use bevy::image::{ImageLoaderSettings, ImageSampler};
@@ -62,8 +62,7 @@ fn main() {
         .add_systems(
             Update,
             (
-                (toggle_grab_cursor)
-                    .run_if(input_just_pressed(KeyCode::Tab)),
+                (toggle_grab_cursor).run_if(input_just_pressed(KeyCode::Tab)),
                 fullscreen.run_if(input_just_pressed(KeyCode::F11)),
                 quit_handler.run_if(input_just_pressed(KeyCode::Escape)),
             ),
@@ -87,7 +86,7 @@ fn setup(
     });
 
     commands.spawn((
-        billboard::Billboard,
+        billboard::Billboard::default(),
         Mesh3d(meshes.add(Plane3d::new(Vec3::Z, Vec2::new(0.5, 0.5)))),
         MeshMaterial3d(materials.add(StandardMaterial {
             base_color_texture: Some(bill_smile.clone()),

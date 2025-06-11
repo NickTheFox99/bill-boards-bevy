@@ -46,7 +46,7 @@ pub enum PlayerAction {
     Move,
     #[actionlike(DualAxis)]
     Look,
-    CubeClick,
+    Click,
 }
 
 impl PlayerAction {
@@ -62,12 +62,12 @@ impl PlayerAction {
                 .inverted_y()
                 .sensitivity(3.0),
         );
-        input_map.insert(Self::CubeClick, GamepadButton::RightTrigger2);
+        input_map.insert(Self::Click, GamepadButton::RightTrigger2);
 
         // Default kbm input bindings
         input_map.insert_dual_axis(Self::Move, VirtualDPad::wasd());
         input_map.insert_dual_axis(Self::Look, MouseMove::default());
-        input_map.insert(Self::CubeClick, MouseButton::Left);
+        input_map.insert(Self::Click, MouseButton::Left);
 
         input_map
     }

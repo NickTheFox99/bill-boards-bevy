@@ -68,18 +68,18 @@ fn cube_click_detect(
     cubes: Query<(&Transform, &mut MeshMaterial3d<StandardMaterial>), With<Cube>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let (player, action) = players.single().unwrap();
+    let (p_trans, action) = players.single().unwrap();
 
-    if !action.just_pressed(&player::PlayerAction::CubeClick) {
+    if !action.just_pressed(&player::PlayerAction::Click) {
         return;
     }
 
-    let dir = player.forward();
-    let ray = Ray::new(Point::new(player.translation.x, player.translation.z), Vector2::new(dir.x, dir.z));
+    let dir = p_trans.forward();
+    let ray = Ray::new(Point::new(p_trans.translation.x, p_trans.translation.z), Vector2::new(dir.x, dir.z));
 
-    for (trans, mut mat) in cubes {
-        let sq = parry2d::shape::Cuboid::new(Vector2::new(trans.scale.x, trans.scale.z) * 0.5);
-        let res = sq.cast_ray(&Isometry2::new(Vector2::new(trans.translation.x, trans.translation.z), 0.0), &ray, 50.0, true);
+    for (c_trans, mut mat) in cubes {
+        let sq = parry2d::shape::Cuboid::new(Vector2::new(c_trans.scale.x, c_trans.scale.z) * 0.5);
+        let res = sq.cast_ray(&Isometry2::new(Vector2::new(c_trans.translation.x, c_trans.translation.z), 0.0), &ray, 50.0, true);
         if let Some(_) = res {
             mat.0 = materials.add(StandardMaterial {
                 base_color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0),
