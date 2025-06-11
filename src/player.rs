@@ -60,7 +60,8 @@ impl PlayerAction {
             GamepadStick::RIGHT
                 .with_circle_deadzone(0.05)
                 .inverted_y()
-                .sensitivity(3.0),
+                .sensitivity_x(20.0)
+                .sensitivity_y(16.0),
         );
         input_map.insert(Self::Click, GamepadButton::RightTrigger2);
 

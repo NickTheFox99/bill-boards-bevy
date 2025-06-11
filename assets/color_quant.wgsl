@@ -6,7 +6,7 @@
 
 @fragment
 fn fragment(mesh: VertexOutput) -> @location(0) vec4<f32> {
-    let lvl = f32(4);
+    let lvl = f32(7);
     let color = textureSample(material_color_texture, material_color_sampler, mesh.uv);
 
     let r = round(color.r * lvl) / (lvl);

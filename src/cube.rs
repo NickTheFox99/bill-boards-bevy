@@ -1,5 +1,5 @@
 use crate::player;
-use bevy::image::{ImageLoaderSettings, ImageSampler};
+use bevy::image::{ImageLoaderSettings};
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 use parry3d::math::{Isometry, Point};
@@ -42,7 +42,7 @@ fn setup(
 ) {
     cube_tex.0 = Some(assets.load_with_settings("cube_tex.png", |s: &mut _| {
         *s = ImageLoaderSettings {
-            sampler: ImageSampler::nearest(),
+            // sampler: ImageSampler::nearest(),
             ..default()
         }
     }));
