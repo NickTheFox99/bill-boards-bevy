@@ -2,9 +2,9 @@ use crate::player;
 use bevy::image::{ImageLoaderSettings, ImageSampler};
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
-use parry2d::math::Point;
-use parry2d::na::{Isometry2, Vector2};
-use parry2d::query::{Ray, RayCast};
+use parry3d::math::{Isometry, Point};
+use parry3d::na::Vector3;
+use parry3d::query::{Ray, RayCast};
 use rand::random;
 
 #[derive(Component)]
@@ -75,11 +75,23 @@ fn cube_click_detect(
     }
 
     let dir = p_trans.forward();
-    let ray = Ray::new(Point::new(p_trans.translation.x, p_trans.translation.z), Vector2::new(dir.x, dir.z));
+    let ray = Ray::new(
+        Point::from(p_trans.translation.to_array()),
+        Vector3::from(dir.to_array()),
+    );
 
     for (c_trans, mut mat) in cubes {
-        let sq = parry2d::shape::Cuboid::new(Vector2::new(c_trans.scale.x, c_trans.scale.z) * 0.5);
-        let res = sq.cast_ray(&Isometry2::new(Vector2::new(c_trans.translation.x, c_trans.translation.z), 0.0), &ray, 50.0, true);
+        let sq = parry3d::shape::Cuboid::new(Vector3::from(c_trans.scale.to_array()) * 0.5);
+
+        let res = sq.cast_ray(
+            &Isometry::new(
+                Vector3::from(c_trans.translation.to_array()),
+                Vector3::from(c_trans.rotation.to_scaled_axis().to_array()),
+            ),
+            &ray,
+            50.0,
+            true,
+        );
         if let Some(_) = res {
             mat.0 = materials.add(StandardMaterial {
                 base_color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0),

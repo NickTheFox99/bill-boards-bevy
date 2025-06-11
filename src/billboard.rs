@@ -70,12 +70,11 @@ fn billboard_interaction(
 
     for (mut bill, b_trans) in boards {
         let b_mesh = quad.clone();
-        let aa = b_trans.rotation.to_axis_angle();
 
         let res = b_mesh.cast_ray(
             &Isometry::new(
                 Vector3::from(b_trans.translation.to_array()),
-                Vector3::from((aa.0 * aa.1).to_array()),
+                Vector3::from(b_trans.rotation.to_scaled_axis().to_array()),
             ),
             &ray,
             50.0,
@@ -83,7 +82,7 @@ fn billboard_interaction(
         );
 
         if let Some(_) = res {
-            bill.spin += TAU * time.delta_secs();
+            bill.spin += TAU * 2.0 * time.delta_secs();
         }
     }
 }
