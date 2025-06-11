@@ -4,7 +4,7 @@ use leafwing_input_manager::prelude::ActionState;
 use parry3d::math::{Isometry, Point};
 use parry3d::na::{Point3, Vector3};
 use parry3d::query::{Ray, RayCast};
-use std::f32::consts::{ TAU};
+use std::f32::consts::TAU;
 
 #[derive(Component)]
 #[require(Mesh3d)]
@@ -33,10 +33,7 @@ fn face_billboards(
 fn billboard_interaction(
     boards: Query<(&mut Billboard, &Transform)>,
     players: Query<
-        (
-            &Transform,
-            &ActionState<player::PlayerAction>,
-        ),
+        (&Transform, &ActionState<player::PlayerAction>),
         (With<player::Player>, Without<Billboard>),
     >,
     time: Res<Time>,

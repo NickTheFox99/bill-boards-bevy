@@ -10,7 +10,12 @@ pub fn plugin(app: &mut App) {
     app.add_systems(Startup, setup);
 }
 
-fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>, mut materials: ResMut<Assets<ColorMaterial>>, render_tex: Res<RenderTex>) {
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    render_tex: Res<RenderTex>,
+) {
     commands.spawn((
         Camera2d,
         Camera {
