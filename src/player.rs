@@ -1,8 +1,8 @@
 use crate::display::RenderTex;
 use crate::MainCamera;
 use bevy::prelude::*;
-use bevy::render::camera::RenderTarget;
-use bevy::render::view::RenderLayers;
+use bevy::render::camera::{RenderTarget};
+use bevy::render::view::{RenderLayers};
 use leafwing_input_manager::prelude::*;
 use parry2d::math::Translation;
 use parry2d::na::Vector2;
@@ -11,29 +11,6 @@ use parry2d::shape::{Ball, Cuboid};
 use std::f32::consts::{FRAC_PI_2, FRAC_PI_4};
 
 const PLAYER_SPEED: f32 = 5.4;
-
-fn setup(mut commands: Commands, render_tex: Res<RenderTex>) {
-    commands.spawn((
-        Camera3d::default(),
-        Camera {
-            // clear_color: ClearColorConfig::None,
-            clear_color: ClearColorConfig::Custom(Color::srgb_u8(245, 245, 245)),
-            target: RenderTarget::Image(render_tex.get_handle().into()),
-            ..default()
-        },
-        Projection::from(PerspectiveProjection {
-            fov: FRAC_PI_4,
-            ..default()
-        }),
-        Transform::from_xyz(5.0, 1.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        Msaa::Off,
-        MainCamera,
-        Player::default(),
-        PlayerAction::default_input_map(),
-        RenderLayers::layer(0),
-    ));
-}
-
 pub fn plugin(app: &mut App) {
     app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
     app.add_systems(Startup, setup);
@@ -95,6 +72,29 @@ impl Default for Player {
 #[derive(Component)]
 #[component(storage = "SparseSet")]
 struct Moving;
+
+fn setup(mut commands: Commands, render_tex: Res<RenderTex>) {
+    commands.spawn((
+        Camera3d::default(),
+        Camera {
+            // clear_color: ClearColorConfig::None,
+            clear_color: ClearColorConfig::Custom(Color::srgb_u8(245, 245, 245)),
+            target: RenderTarget::Image(render_tex.get_handle().into()),
+            ..default()
+        },
+        Projection::from(PerspectiveProjection {
+            fov: FRAC_PI_4,
+            aspect_ratio: 4.0 / 3.0,
+            ..default()
+        }),
+        Transform::from_xyz(5.0, 1.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
+        Msaa::Off,
+        MainCamera,
+        Player::default(),
+        PlayerAction::default_input_map(),
+        RenderLayers::layer(0),
+    ));
+}
 
 fn mouselook(mut query: Query<(&mut Transform, &mut Player, &ActionState<PlayerAction>)>) {
     let (mut transform, mut player_camera, action) = query.single_mut().unwrap();

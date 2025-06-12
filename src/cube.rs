@@ -1,4 +1,4 @@
-use crate::player;
+use crate::{player, GameSettings};
 use bevy::image::ImageLoaderSettings;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
@@ -39,6 +39,7 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut cube_tex: ResMut<CubeTex>,
     assets: Res<AssetServer>,
+    g_set: Res<GameSettings>,
 ) {
     cube_tex.0 = Some(assets.load_with_settings("cube_tex.png", |s: &mut _| {
         *s = ImageLoaderSettings {
@@ -54,7 +55,7 @@ fn setup(
         MeshMaterial3d(materials.add(StandardMaterial {
             base_color: Color::srgb_u8(255, 0, 0),
             base_color_texture: Some(cube_tex.get_handle()),
-            unlit: true,
+            unlit: g_set.contains(GameSettings::FLAT_LIGHT),
             ..default()
         })),
         Transform::from_xyz(0.0, 0.25, 0.0).with_scale(Vec3::splat(0.5)),
@@ -63,11 +64,14 @@ fn setup(
 }
 
 fn cube_click_detect(
+    mut materials: ResMut<Assets<StandardMaterial>>,
     players: Query<(&Transform, &ActionState<player::PlayerAction>), With<player::Player>>,
     cube_tex: Res<CubeTex>,
     cubes: Query<(&Transform, &mut MeshMaterial3d<StandardMaterial>), With<Cube>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    g_set: Res<GameSettings>,
 ) {
+    let unlit = g_set.contains(GameSettings::FLAT_LIGHT);
+
     let (p_trans, action) = players.single().unwrap();
 
     if !action.just_pressed(&player::PlayerAction::Click) {
@@ -96,7 +100,7 @@ fn cube_click_detect(
             mat.0 = materials.add(StandardMaterial {
                 base_color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0),
                 base_color_texture: Some(cube_tex.get_handle()),
-                unlit: true,
+                unlit,
                 ..default()
             })
         }

@@ -59,6 +59,7 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     game_size: Res<GameSize>,
     windows: Query<&Window, With<PrimaryWindow>>,
+    g_set: Res<crate::GameSettings>,
 ) {
     let window = windows.single().unwrap();
 
@@ -112,7 +113,7 @@ fn setup(
         },
         RenderLayers::layer(1),
     ));
-    if cfg!(target_arch = "wasm32") {
+    if cfg!(target_arch = "wasm32") || !g_set.contains(crate::GameSettings::COLOR_QUANTIZE) {
         display.insert(MeshMaterial2d(materials.add(ColorMaterial {
             texture: Some(render_tex.get_handle()),
             ..default()

@@ -7,13 +7,14 @@ edition = "2021"
 bevy = {version = "*", features = ["dynamic_linking"]}
 
 [dependencies]
-bevy = "*"
-bevy_embedded_assets = "*"
+bevy = ">=0.16"
+bevy_embedded_assets = ">=0.13"
 rand = "*"
-leafwing-input-manager = "*"
-bevy_fix_cursor_unlock_web = "*"
-parry3d = "0.21.1"
-parry2d = "0.21.1"
+leafwing-input-manager = ">=0.17"
+bevy_fix_cursor_unlock_web = ">=0.1.2"
+parry3d = ">=0.21.1"
+parry2d = ">=0.21.1"
+bitflags = "2.9.1"
 
 [lints.clippy]
 too_many_arguments = "allow"

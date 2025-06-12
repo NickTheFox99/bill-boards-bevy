@@ -2,11 +2,13 @@ mod billboard;
 mod cube;
 mod display;
 mod grid;
+mod lighting;
 mod player;
 mod ui;
 
 use bevy::image::{ImageLoaderSettings, ImageSampler};
 use bevy::input::common_conditions::input_just_pressed;
+use bevy::pbr::{NotShadowCaster, NotShadowReceiver};
 use bevy::prelude::*;
 use bevy::render::render_resource::Extent3d;
 use bevy::window::{
@@ -14,9 +16,26 @@ use bevy::window::{
 };
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
 use bevy_fix_cursor_unlock_web::prelude::*;
+use bitflags::bitflags;
 
 #[derive(Resource)]
 struct GameSize(Extent3d);
+
+#[derive(Resource)]
+struct GameSettings(u32);
+
+bitflags! {
+    impl GameSettings: u32 {
+        const FLAT_LIGHT = 1 << 0;
+        const COLOR_QUANTIZE = 1 << 1;
+    }
+}
+
+impl Default for GameSettings {
+    fn default() -> Self {
+        GameSettings::all()
+    }
+}
 
 #[derive(Component)]
 #[require(Camera)]
@@ -51,13 +70,15 @@ fn main() {
             display::plugin,
             cube::plugin,
             ui::plugin,
+            lighting::plugin,
         ))
         .insert_resource(GameSize(Extent3d {
             width: 320,
             height: 240,
             depth_or_array_layers: 1,
         }))
-        .insert_resource(AmbientLight::NONE)
+        // .insert_resource(AmbientLight::NONE)
+        .init_resource::<GameSettings>()
         .add_systems(Startup, setup)
         .add_systems(
             Update,
@@ -75,7 +96,10 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     assets: Res<AssetServer>,
+    g_set: Res<GameSettings>,
 ) {
+    let unlit = g_set.contains(GameSettings::FLAT_LIGHT);
+
     // --- BILL SETUP ---
 
     let bill_smile: Handle<Image> = assets.load_with_settings("bill_smile.png", |s: &mut _| {
@@ -92,9 +116,11 @@ fn setup(
             base_color_texture: Some(bill_smile.clone()),
             base_color: Color::srgb_u8(0, 255, 0),
             alpha_mode: AlphaMode::Blend,
-            unlit: true,
+            unlit,
             ..default()
         })),
+        NotShadowCaster,
+        NotShadowReceiver,
         Transform::from_xyz(0.0, 1.0, 0.0),
     ));
 
@@ -104,7 +130,7 @@ fn setup(
         Mesh3d(meshes.add(grid::gen_mesh(10))),
         MeshMaterial3d(materials.add(StandardMaterial {
             base_color: Color::WHITE,
-            unlit: true,
+            unlit,
             ..default()
         })),
         Transform::from_scale(Vec3::splat(10.0)),
