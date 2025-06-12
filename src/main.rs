@@ -33,7 +33,7 @@ bitflags! {
 
 impl Default for GameSettings {
     fn default() -> Self {
-        GameSettings::all()
+        GameSettings::empty()
     }
 }
 

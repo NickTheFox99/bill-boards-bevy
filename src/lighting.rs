@@ -15,16 +15,21 @@ fn setup(
     g_set: Res<GameSettings>,
 ) {
     if g_set.contains(GameSettings::FLAT_LIGHT) {
-        ()
+        return;
     }
-    commands
-        .entity(players.single().unwrap())
-        .insert(SpotLight {
+
+    let light = commands
+        .spawn(SpotLight {
             intensity: 100_000.0,
             color: WHITE.into(),
-            shadows_enabled: true,
+            shadows_enabled: false,
             inner_angle: 0.0,
             outer_angle: FRAC_PI_8,
             ..default()
-        });
+        })
+        .id();
+
+    commands
+        .entity(players.single().unwrap())
+        .insert_children(0, &[light]);
 }
