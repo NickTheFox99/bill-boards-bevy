@@ -2,9 +2,9 @@ mod billboard;
 mod cube;
 mod display;
 mod grid;
-mod lighting;
 mod player;
 mod ui;
+mod flat;
 
 use bevy::image::{ImageLoaderSettings, ImageSampler};
 use bevy::input::common_conditions::input_just_pressed;
@@ -17,6 +17,7 @@ use bevy::window::{
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
 use bevy_fix_cursor_unlock_web::prelude::*;
 use bitflags::bitflags;
+use crate::flat::FlatMaterial;
 
 #[derive(Resource)]
 struct GameSize(Extent3d);
@@ -26,14 +27,13 @@ struct GameSettings(u32);
 
 bitflags! {
     impl GameSettings: u32 {
-        const FLAT_LIGHT = 1 << 0;
-        const COLOR_QUANTIZE = 1 << 1;
+        const COLOR_QUANTIZE = 1 << 0;
     }
 }
 
 impl Default for GameSettings {
     fn default() -> Self {
-        GameSettings::empty()
+        GameSettings::COLOR_QUANTIZE
     }
 }
 
@@ -59,7 +59,7 @@ fn main() {
                         maximize: false,
                         close: false,
                     },
-                    // mode: WindowMode::BorderlessFullscreen(MonitorSelection::Primary),
+                    mode: WindowMode::BorderlessFullscreen(MonitorSelection::Primary),
                     ..default()
                 }),
                 ..default()
@@ -70,7 +70,7 @@ fn main() {
             display::plugin,
             cube::plugin,
             ui::plugin,
-            lighting::plugin,
+            flat::plugin,
         ))
         .insert_resource(GameSize(Extent3d {
             width: 320,
@@ -94,12 +94,9 @@ fn main() {
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut materials: ResMut<Assets<FlatMaterial>>,
     assets: Res<AssetServer>,
-    g_set: Res<GameSettings>,
 ) {
-    let unlit = g_set.contains(GameSettings::FLAT_LIGHT);
-
     // --- BILL SETUP ---
 
     let bill_smile: Handle<Image> = assets.load_with_settings("bill_smile.png", |s: &mut _| {
@@ -112,15 +109,10 @@ fn setup(
     commands.spawn((
         billboard::Billboard::default(),
         Mesh3d(meshes.add(Plane3d::new(Vec3::Z, Vec2::new(0.5, 0.5)))),
-        MeshMaterial3d(materials.add(StandardMaterial {
-            base_color_texture: Some(bill_smile.clone()),
-            base_color: Color::srgb_u8(0, 255, 0),
-            alpha_mode: AlphaMode::Blend,
-            unlit,
-            ..default()
+        MeshMaterial3d(materials.add(FlatMaterial {
+            texture: Some(bill_smile.clone()),
+            color: Color::srgb_u8(0, 255, 0).into(),
         })),
-        NotShadowCaster,
-        NotShadowReceiver,
         Transform::from_xyz(0.0, 1.0, 0.0),
     ));
 
@@ -128,10 +120,9 @@ fn setup(
 
     commands.spawn((
         Mesh3d(meshes.add(grid::gen_mesh(10))),
-        MeshMaterial3d(materials.add(StandardMaterial {
-            base_color: Color::WHITE,
-            unlit,
-            ..default()
+        MeshMaterial3d(materials.add(FlatMaterial {
+            color: Color::WHITE.into(),
+            texture: None,
         })),
         Transform::from_scale(Vec3::splat(10.0)),
     ));

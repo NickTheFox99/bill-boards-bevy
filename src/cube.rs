@@ -1,3 +1,4 @@
+use crate::flat::FlatMaterial;
 use crate::{player, GameSettings};
 use bevy::image::ImageLoaderSettings;
 use bevy::prelude::*;
@@ -36,10 +37,9 @@ pub fn plugin(app: &mut App) {
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut materials: ResMut<Assets<FlatMaterial>>,
     mut cube_tex: ResMut<CubeTex>,
     assets: Res<AssetServer>,
-    g_set: Res<GameSettings>,
 ) {
     cube_tex.0 = Some(assets.load_with_settings("cube_tex.png", |s: &mut _| {
         *s = ImageLoaderSettings {
@@ -52,11 +52,9 @@ fn setup(
 
     commands.spawn((
         Mesh3d::from(cube_mesh.clone()),
-        MeshMaterial3d(materials.add(StandardMaterial {
-            base_color: Color::srgb_u8(255, 0, 0),
-            base_color_texture: Some(cube_tex.get_handle()),
-            unlit: g_set.contains(GameSettings::FLAT_LIGHT),
-            ..default()
+        MeshMaterial3d(materials.add(FlatMaterial {
+            color: LinearRgba::new(1.0, 0.0, 0.0, 1.0),
+            texture: Some(cube_tex.get_handle()),
         })),
         Transform::from_xyz(0.0, 0.25, 0.0).with_scale(Vec3::splat(0.5)),
         Cube,
@@ -64,14 +62,11 @@ fn setup(
 }
 
 fn cube_click_detect(
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut materials: ResMut<Assets<FlatMaterial>>,
     players: Query<(&Transform, &ActionState<player::PlayerAction>), With<player::Player>>,
     cube_tex: Res<CubeTex>,
-    cubes: Query<(&Transform, &mut MeshMaterial3d<StandardMaterial>), With<Cube>>,
-    g_set: Res<GameSettings>,
+    cubes: Query<(&Transform, &mut MeshMaterial3d<FlatMaterial>), With<Cube>>,
 ) {
-    let unlit = g_set.contains(GameSettings::FLAT_LIGHT);
-
     let (p_trans, action) = players.single().unwrap();
 
     if !action.just_pressed(&player::PlayerAction::Click) {
@@ -97,11 +92,11 @@ fn cube_click_detect(
             true,
         );
         if let Some(_) = res {
-            mat.0 = materials.add(StandardMaterial {
-                base_color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0),
-                base_color_texture: Some(cube_tex.get_handle()),
-                unlit,
-                ..default()
+            mat.0 = materials.add(FlatMaterial {
+                color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0)
+                    .with_alpha(1.0)
+                    .into(),
+                texture: Some(cube_tex.get_handle()),
             })
         }
     }

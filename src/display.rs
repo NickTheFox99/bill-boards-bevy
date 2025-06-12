@@ -59,7 +59,7 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
     game_size: Res<GameSize>,
     windows: Query<&Window, With<PrimaryWindow>>,
-    g_set: Res<crate::GameSettings>,
+    mut g_set: ResMut<crate::GameSettings>,
 ) {
     let window = windows.single().unwrap();
 
@@ -119,11 +119,13 @@ fn setup(
             ..default()
         })));
         info!("Defaulting to ColorMaterial!");
+        g_set.set(crate::GameSettings::COLOR_QUANTIZE, false);
     } else {
         display.insert(MeshMaterial2d(q_material.add(QuantizerMaterial {
             texture: Some(render_tex.get_handle()),
         })));
         info!("Quantizer Material picked!");
+        g_set.set(crate::GameSettings::COLOR_QUANTIZE, true);
     }
 }
 
