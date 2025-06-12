@@ -1,5 +1,5 @@
-use crate::flat::FlatMaterial;
-use crate::player;
+use crate::flat::{FlatMaterial, MaterialOverride};
+use crate::{player, GameSettings};
 use bevy::image::ImageLoaderSettings;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
@@ -62,10 +62,19 @@ fn setup(
 }
 
 fn cube_click_detect(
-    mut materials: ResMut<Assets<FlatMaterial>>,
+    mut s_mats: ResMut<Assets<StandardMaterial>>,
+    mut f_mats: ResMut<Assets<FlatMaterial>>,
+    g_set: Res<GameSettings>,
     players: Query<(&Transform, &ActionState<player::PlayerAction>), With<player::Player>>,
     cube_tex: Res<CubeTex>,
-    cubes: Query<(&Transform, &mut MeshMaterial3d<FlatMaterial>), With<Cube>>,
+    cubes: Query<
+        (
+            &Transform,
+            Option<&mut MeshMaterial3d<FlatMaterial>>,
+            Option<&mut MeshMaterial3d<StandardMaterial>>,
+        ),
+        (With<Cube>, Without<MaterialOverride>),
+    >,
 ) {
     let (p_trans, action) = players.single().unwrap();
 
@@ -79,7 +88,7 @@ fn cube_click_detect(
         Vector3::from(dir.to_array()),
     );
 
-    for (c_trans, mut mat) in cubes {
+    for (c_trans, mut f_mat, mut s_mat) in cubes {
         let sq = parry3d::shape::Cuboid::new(Vector3::from(c_trans.scale.to_array()) * 0.5);
 
         let res = sq.cast_ray(
@@ -92,12 +101,26 @@ fn cube_click_detect(
             true,
         );
         if let Some(_) = res {
-            mat.0 = materials.add(FlatMaterial {
-                color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0)
-                    .with_alpha(1.0)
-                    .into(),
-                texture: Some(cube_tex.get_handle()),
-            })
+            if g_set.contains(GameSettings::FLAT)
+                && let Some(mut mat) = f_mat
+            {
+                mat.0 = f_mats.add(FlatMaterial {
+                    color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0)
+                        .with_alpha(1.0)
+                        .into(),
+                    texture: Some(cube_tex.get_handle()),
+                });
+            }
+
+            if !g_set.contains(GameSettings::FLAT)
+                && let Some(mut mat) = s_mat
+            {
+                mat.0 = s_mats.add(StandardMaterial {
+                    base_color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0),
+                    base_color_texture: Some(cube_tex.get_handle()),
+                    ..default()
+                });
+            }
         }
     }
 }
