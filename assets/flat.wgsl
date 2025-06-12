@@ -6,5 +6,12 @@
 
 @fragment
 fn fragment(mesh: VertexOutput) -> @location(0) vec4<f32> {
-    return (textureSample(material_color_texture, material_color_sampler, mesh.uv) * material_color);
+    var color = material_color;
+#ifdef VERTEX_UVS_A
+    color *= textureSample(material_color_texture, material_color_sampler, mesh.uv);
+#endif
+#ifdef VERTEX_COLORS
+    color *= mesh.color;
+#endif
+    return color;
 }

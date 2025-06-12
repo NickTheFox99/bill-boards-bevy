@@ -21,6 +21,6 @@ impl Material for FlatMaterial {
     }
 
     fn alpha_mode(&self) -> AlphaMode {
-        AlphaMode::Mask(0.0)
+        AlphaMode::Blend
     }
 }
