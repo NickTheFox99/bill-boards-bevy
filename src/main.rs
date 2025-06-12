@@ -27,12 +27,13 @@ struct GameSettings(u32);
 bitflags! {
     impl GameSettings: u32 {
         const COLOR_QUANTIZE = 1 << 0;
+        const FLAT = 1 << 1;
     }
 }
 
 impl Default for GameSettings {
     fn default() -> Self {
-        GameSettings::COLOR_QUANTIZE
+        GameSettings::COLOR_QUANTIZE | GameSettings::FLAT
     }
 }
 
