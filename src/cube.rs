@@ -1,5 +1,5 @@
 use crate::flat::FlatMaterial;
-use crate::{player, GameSettings};
+use crate::player;
 use bevy::image::ImageLoaderSettings;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;

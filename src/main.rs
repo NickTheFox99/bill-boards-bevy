@@ -1,14 +1,14 @@
 mod billboard;
 mod cube;
 mod display;
+mod flat;
 mod grid;
 mod player;
 mod ui;
-mod flat;
 
+use crate::flat::FlatMaterial;
 use bevy::image::{ImageLoaderSettings, ImageSampler};
 use bevy::input::common_conditions::input_just_pressed;
-use bevy::pbr::{NotShadowCaster, NotShadowReceiver};
 use bevy::prelude::*;
 use bevy::render::render_resource::Extent3d;
 use bevy::window::{
@@ -17,7 +17,6 @@ use bevy::window::{
 use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
 use bevy_fix_cursor_unlock_web::prelude::*;
 use bitflags::bitflags;
-use crate::flat::FlatMaterial;
 
 #[derive(Resource)]
 struct GameSize(Extent3d);

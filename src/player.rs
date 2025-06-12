@@ -1,8 +1,8 @@
 use crate::display::RenderTex;
 use crate::MainCamera;
 use bevy::prelude::*;
-use bevy::render::camera::{RenderTarget};
-use bevy::render::view::{RenderLayers};
+use bevy::render::camera::RenderTarget;
+use bevy::render::view::RenderLayers;
 use leafwing_input_manager::prelude::*;
 use parry2d::math::Translation;
 use parry2d::na::Vector2;
