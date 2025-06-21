@@ -1,6 +1,11 @@
 use crate::GameSettings;
+use bevy::pbr::{MaterialPipeline, MaterialPipelineKey};
 use bevy::prelude::*;
-use bevy::render::render_resource::{AsBindGroup, ShaderRef};
+use bevy::render::mesh::MeshVertexBufferLayoutRef;
+use bevy::render::render_resource::{
+    AsBindGroup, CompareFunction, DepthBiasState, DepthStencilState, RenderPipelineDescriptor,
+    ShaderRef, SpecializedMeshPipelineError, StencilState, TextureFormat,
+};
 
 pub fn plugin(app: &mut App) {
     app.add_plugins(MaterialPlugin::<FlatMaterial>::default());
@@ -18,6 +23,7 @@ pub struct FlatMaterial {
     pub texture: Option<Handle<Image>>,
     #[uniform(2)]
     pub color: LinearRgba,
+    pub alpha_mode: AlphaMode,
 }
 
 impl Material for FlatMaterial {
@@ -26,7 +32,12 @@ impl Material for FlatMaterial {
     }
 
     fn alpha_mode(&self) -> AlphaMode {
-        AlphaMode::Blend
+        self.alpha_mode
+    }
+
+    fn specialize(pipeline: &MaterialPipeline<Self>, descriptor: &mut RenderPipelineDescriptor, layout: &MeshVertexBufferLayoutRef, key: MaterialPipelineKey<Self>) -> Result<(), SpecializedMeshPipelineError> {
+        info!("{:?}",descriptor.primitive.cull_mode);
+        Ok(())
     }
 }
 
@@ -48,6 +59,7 @@ pub fn set_materials(
             let n_mat = MeshMaterial3d(f_mats.add(FlatMaterial {
                 color: o_mat.base_color.clone().into(),
                 texture: o_mat.base_color_texture.clone(),
+                alpha_mode: o_mat.alpha_mode,
             }));
             commands
                 .entity(e)
@@ -61,7 +73,7 @@ pub fn set_materials(
             let n_mat = MeshMaterial3d(s_mats.add(StandardMaterial {
                 base_color: o_mat.color.clone().into(),
                 base_color_texture: o_mat.texture.clone(),
-                alpha_mode: AlphaMode::Blend,
+                alpha_mode: o_mat.alpha_mode,
                 unlit: true,
                 ..default()
             }));

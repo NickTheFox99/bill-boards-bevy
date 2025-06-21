@@ -113,6 +113,7 @@ fn setup(
         MeshMaterial3d(materials.add(FlatMaterial {
             texture: Some(bill_smile.clone()),
             color: Color::srgb_u8(0, 255, 0).into(),
+            alpha_mode: AlphaMode::Blend,
         })),
         Transform::from_xyz(0.0, 1.0, 0.0),
     ));
@@ -121,9 +122,11 @@ fn setup(
 
     commands.spawn((
         Mesh3d(meshes.add(grid::gen_mesh(10))),
-        MeshMaterial3d(materials.add(FlatMaterial {
-            color: Color::WHITE.into(),
-            texture: None,
+        MeshMaterial3d(s_mats.add(StandardMaterial {
+            base_color: Color::WHITE.into(),
+            alpha_mode: AlphaMode::Opaque,
+            unlit: true,
+            ..default()
         })),
         Transform::from_scale(Vec3::splat(10.0)),
     ));

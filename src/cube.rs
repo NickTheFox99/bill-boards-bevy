@@ -55,6 +55,7 @@ fn setup(
         MeshMaterial3d(materials.add(FlatMaterial {
             color: LinearRgba::new(1.0, 0.0, 0.0, 1.0),
             texture: Some(cube_tex.get_handle()),
+            alpha_mode: AlphaMode::Opaque,
         })),
         Transform::from_xyz(0.0, 0.25, 0.0).with_scale(Vec3::splat(0.5)),
         Cube,
@@ -105,9 +106,8 @@ fn cube_click_detect(
                 && let Some(mut mat) = f_mat
             {
                 mat.0 = f_mats.add(FlatMaterial {
-                    color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0)
-                        .with_alpha(1.0)
-                        .into(),
+                    color: Color::hsv(random::<f32>() * 360.0, 1.0, 1.0).into(),
+                    alpha_mode: AlphaMode::Opaque,
                     texture: Some(cube_tex.get_handle()),
                 });
             }
