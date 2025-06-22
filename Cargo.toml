@@ -7,14 +7,15 @@ edition = "2021"
 bevy = {version = "=0.16.1", features = ["dynamic_linking"]}
 
 [dependencies]
+wasm-bindgen = "0.2.100"
 bevy = "=0.16.1"
 bevy_embedded_assets = ">=0.13"
-rand = "*"
 leafwing-input-manager = ">=0.17"
 bevy_fix_cursor_unlock_web = ">=0.1.2"
 parry3d = ">=0.21.1"
 parry2d = ">=0.21.1"
 bitflags = "2.9.1"
+rand = "*"
 
 [lints.clippy]
 too_many_arguments = "allow"
