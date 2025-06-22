@@ -6,6 +6,7 @@ mod flat;
 mod grid;
 mod player;
 mod ui;
+mod smile;
 
 use crate::flat::FlatMaterial;
 use bevy::image::{ImageLoaderSettings, ImageSampler};
@@ -72,6 +73,7 @@ fn main() {
             cube::plugin,
             ui::plugin,
             flat::plugin,
+            smile::plugin,
         ))
         .insert_resource(GameSize(Extent3d {
             width: 320,
@@ -95,34 +97,13 @@ fn main() {
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<FlatMaterial>>,
-    assets: Res<AssetServer>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // --- BILL SETUP ---
-
-    let bill_smile: Handle<Image> = assets.load_with_settings("bill_smile.png", |s: &mut _| {
-        *s = ImageLoaderSettings {
-            sampler: ImageSampler::nearest(),
-            ..default()
-        }
-    });
-
-    commands.spawn((
-        billboard::Billboard::default(),
-        Mesh3d(meshes.add(Plane3d::new(Vec3::Z, Vec2::new(0.5, 0.5)))),
-        MeshMaterial3d(materials.add(FlatMaterial {
-            texture: Some(bill_smile.clone()),
-            color: Color::srgb_u8(0, 255, 0).into(),
-            alpha_mode: AlphaMode::Blend,
-        })),
-        Transform::from_xyz(0.0, 1.0, 0.0),
-    ));
-
     // --- GROUND SETUP ---
 
     commands.spawn((
         Mesh3d(meshes.add(grid::gen_mesh(10))),
-        MeshMaterial3d(s_mats.add(StandardMaterial {
+        MeshMaterial3d(materials.add(StandardMaterial {
             base_color: Color::WHITE.into(),
             alpha_mode: AlphaMode::Opaque,
             unlit: true,
