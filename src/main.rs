@@ -9,7 +9,6 @@ mod ui;
 mod smile;
 
 use crate::flat::FlatMaterial;
-use bevy::image::{ImageLoaderSettings, ImageSampler};
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 use bevy::render::render_resource::Extent3d;

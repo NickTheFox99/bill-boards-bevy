@@ -1,10 +1,7 @@
 use crate::GameSettings;
-use bevy::pbr::{MaterialPipeline, MaterialPipelineKey};
 use bevy::prelude::*;
-use bevy::render::mesh::MeshVertexBufferLayoutRef;
 use bevy::render::render_resource::{
-    AsBindGroup, CompareFunction, DepthBiasState, DepthStencilState, RenderPipelineDescriptor,
-    ShaderRef, SpecializedMeshPipelineError, StencilState, TextureFormat,
+    AsBindGroup, ShaderRef,
 };
 
 pub fn plugin(app: &mut App) {
@@ -33,11 +30,6 @@ impl Material for FlatMaterial {
 
     fn alpha_mode(&self) -> AlphaMode {
         self.alpha_mode
-    }
-
-    fn specialize(pipeline: &MaterialPipeline<Self>, descriptor: &mut RenderPipelineDescriptor, layout: &MeshVertexBufferLayoutRef, key: MaterialPipelineKey<Self>) -> Result<(), SpecializedMeshPipelineError> {
-        info!("{:?}",descriptor.primitive.cull_mode);
-        Ok(())
     }
 }
 

@@ -1,34 +1,39 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Release for wasm32",
-      "type": "shell",
-      "command": "cargo",
-      "args": [
-        "build",
-        "--profile",
-        "web-release",
-        "--target",
-        "wasm32-unknown-unknown"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "Run wasm-bindgen",
-      "type": "shell",
-      "command": "wasm-bindgen",
-      "args": [ 
-        "--no-typescript",
-        "--out-dir",
-        "${workspaceFolder}/out/",
-        "--target",
-        "web",
-        "${workspaceFolder}/target/wasm32-unknown-unknown/release/bill-boards-bevy.wasm"
-      ],
-      "dependsOn": "Release for wasm32",
-      "problemMatcher": []
-    }
-  ]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Release for wasm32",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "--profile",
+                "web-release",
+                "--target",
+                "wasm32-unknown-unknown"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run wasm-bindgen",
+            "type": "shell",
+            "command": "wasm-bindgen",
+            "args": [
+                "--no-typescript",
+                "--out-dir",
+                "${workspaceFolder}/out/",
+                "--target",
+                "web",
+                "${workspaceFolder}/target/wasm32-unknown-unknown/web-release/bill-boards-bevy.wasm"
+            ],
+            "dependsOn": "Release for wasm32",
+            "problemMatcher": [],
+            "options": {
+                "env": {
+                    "PATH": "${env:HOME}/.cargo/bin:${env:PATH}"
+                }
+            }
+        }
+    ]
 }

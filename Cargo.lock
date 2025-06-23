@@ -1358,7 +1358,6 @@ dependencies = [
  "parry2d",
  "parry3d",
  "rand",
- "wasm-bindgen",
 ]
 
 [[package]]

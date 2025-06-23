@@ -89,7 +89,7 @@ fn cube_click_detect(
         Vector3::from(dir.to_array()),
     );
 
-    for (c_trans, mut f_mat, mut s_mat) in cubes {
+    for (c_trans, f_mat, s_mat) in cubes {
         let sq = parry3d::shape::Cuboid::new(Vector3::from(c_trans.scale.to_array()) * 0.5);
 
         let res = sq.cast_ray(
