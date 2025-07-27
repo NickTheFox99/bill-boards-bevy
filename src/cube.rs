@@ -71,7 +71,7 @@ fn setup(
             texture: Some(cube_tex.get_handle()),
             alpha_mode: AlphaMode::Opaque,
         })),
-        Transform::from_xyz(0.0, 0.25, 0.0).with_scale(Vec3::splat(0.5)),
+        Transform::from_xyz(1.0, 0.25, 0.0).with_scale(Vec3::splat(0.5)),
         Cube,
     ));
 }

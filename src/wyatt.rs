@@ -1,7 +1,5 @@
 // <3 wyatt
 
-use crate::flat::DynamicMaterial;
-use bevy::gltf::GltfMesh;
 use bevy::prelude::*;
 
 pub fn plugin(app: &mut App) {
@@ -34,7 +32,13 @@ fn update(
 
     let current_quat = wyatt.rotation;
     let target_quat = Quat::from_euler(EulerRot::YXZ, angle_to_player, 0.0, 0.0);
-    let new_rotation = current_quat.lerp(target_quat, 1.75 * time.delta_secs());
+    let new_rotation = current_quat.lerp(target_quat, 2.5 * time.delta_secs());
 
     wyatt.rotation = new_rotation;
+
+    let dist = wyatt.translation.distance_squared(player.translation);
+
+    let f = wyatt.forward();
+    wyatt.translation += f * time.delta_secs() * (dist - 1.0) / 5.0;
+
 }
