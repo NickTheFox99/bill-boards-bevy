@@ -118,13 +118,13 @@ fn setup(
             texture: Some(render_tex.get_handle()),
             ..default()
         })));
-        info!("Defaulting to ColorMaterial!");
+        // info!("Defaulting to ColorMaterial!");
         g_set.set(crate::GameSettings::COLOR_QUANTIZE, false);
     } else {
         display.insert(MeshMaterial2d(q_material.add(QuantizerMaterial {
             texture: Some(render_tex.get_handle()),
         })));
-        info!("Quantizer Material picked!");
+        // info!("Quantizer Material picked!");
         g_set.set(crate::GameSettings::COLOR_QUANTIZE, true);
     }
 }

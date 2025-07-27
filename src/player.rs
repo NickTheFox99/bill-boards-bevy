@@ -1,20 +1,17 @@
-use crate::display::RenderTex;
 use crate::MainCamera;
+use crate::display::RenderTex;
 use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
 use bevy::render::view::RenderLayers;
 use leafwing_input_manager::prelude::*;
-use parry2d::math::Translation;
-use parry2d::na::Vector2;
-use parry2d::query;
-use parry2d::shape::{Ball, Cuboid};
 use std::f32::consts::{FRAC_PI_2, FRAC_PI_4};
+use bevy::window::WindowEvent::KeyboardInput;
 
 const PLAYER_SPEED: f32 = 5.4;
 pub fn plugin(app: &mut App) {
     app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
     app.add_systems(Startup, setup);
-    app.add_systems(Update, ((movement_input, physics).chain(), mouselook));
+    app.add_systems(Update, ((movement_input, physics, stepping).chain(), mouselook));
 }
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
@@ -24,6 +21,7 @@ pub enum PlayerAction {
     #[actionlike(DualAxis)]
     Look,
     Click,
+    Sprint,
 }
 
 impl PlayerAction {
@@ -41,11 +39,13 @@ impl PlayerAction {
                 .sensitivity_y(16.0),
         );
         input_map.insert(Self::Click, GamepadButton::RightTrigger2);
+        input_map.insert(Self::Sprint, GamepadButton::LeftTrigger2);
 
         // Default kbm input bindings
         input_map.insert_dual_axis(Self::Move, VirtualDPad::wasd());
         input_map.insert_dual_axis(Self::Look, MouseMove::default());
         input_map.insert(Self::Click, MouseButton::Left);
+        input_map.insert(Self::Sprint, KeyCode::Space);
 
         input_map
     }
@@ -57,6 +57,9 @@ pub struct Player {
     yaw: f32,
     pitch: f32,
     move_input: Option<Vec2>,
+    height: f32,
+    fat: f32,
+    step_dist: f32,
 }
 
 impl Default for Player {
@@ -65,6 +68,9 @@ impl Default for Player {
             yaw: 0.0,
             pitch: 0.0,
             move_input: None,
+            height: 1.0,
+            fat: f32::MIN_POSITIVE,
+            step_dist: 0.05,
         }
     }
 }
@@ -139,17 +145,19 @@ fn physics(
     let (mut trans, player) = player_query.single_mut().unwrap();
 
     if let Some(slide) = player.move_input {
-        let p_shape = Ball::new(0.25);
+        let p_shape = parry2d::shape::Ball::new(player.fat);
         trans.translation += Vec3::new(slide.x, 0.0, slide.y);
 
         // Push-Out
         for cube in cubes {
-            let boid = Cuboid::new(Vector2::new(cube.scale.x, cube.scale.z) * 0.5);
+            let boid = parry2d::shape::Cuboid::new(
+                parry2d::na::Vector2::new(cube.scale.x, cube.scale.z) * 0.5,
+            );
 
-            if let Ok(Some(res)) = query::contact(
-                &Translation::new(trans.translation.x, trans.translation.z).into(),
+            if let Ok(Some(res)) = parry2d::query::contact(
+                &parry2d::math::Translation::new(trans.translation.x, trans.translation.z).into(),
                 &p_shape,
-                &Translation::new(cube.translation.x, cube.translation.z).into(),
+                &parry2d::math::Translation::new(cube.translation.x, cube.translation.z).into(),
                 &boid,
                 0.0,
             ) {
@@ -161,4 +169,34 @@ fn physics(
             };
         }
     };
+}
+
+fn stepping(
+    mut player_query: Query<(&mut Transform, &Player), Without<crate::cube::Cube>>,
+    cubes: Query<&Transform, With<crate::cube::Cube>>,
+) {
+    let (mut trans, player) = player_query.single_mut().unwrap();
+    let mut highest_point: f32 = f32::NEG_INFINITY;
+    let p_shape = parry2d::shape::Ball::new(player.fat + player.step_dist);
+    for cube in cubes.iter() {
+        let boid = parry2d::shape::Cuboid::new(parry2d::na::Vector2::new(cube.scale.x, cube.scale.z) * 0.5);
+
+        if !parry2d::query::intersection_test(
+            &parry2d::math::Translation::new(trans.translation.x, trans.translation.z).into(),
+            &p_shape,
+            &parry2d::math::Translation::new(cube.translation.x, cube.translation.z).into(),
+            &boid,
+        ).unwrap() {continue;}
+
+        let height = cube.translation.y + cube.scale.y * 0.5;
+        if height > highest_point {
+            highest_point = height;
+        }
+    }
+
+    if highest_point > f32::NEG_INFINITY {
+        trans.translation.y = highest_point + player.height;
+    } else {
+        trans.translation.y = player.height;
+    }
 }

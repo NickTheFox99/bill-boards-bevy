@@ -1,5 +1,5 @@
-use crate::flat::{FlatMaterial, MaterialOverride};
-use crate::{player, GameSettings};
+use crate::flat::{DynamicMaterial, FlatMaterial};
+use crate::{GameSettings, player};
 use bevy::image::ImageLoaderSettings;
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
@@ -9,7 +9,7 @@ use parry3d::query::{Ray, RayCast};
 use rand::random;
 
 #[derive(Component)]
-#[require(Mesh3d)]
+#[require(Mesh3d, DynamicMaterial)]
 pub struct Cube;
 
 #[derive(Resource)]
@@ -50,20 +50,30 @@ fn setup(
 
     let cube_mesh = meshes.add(Cuboid::default());
 
-    for i in -10..=10 {
-        for j in -10..=10 {
-            commands.spawn((
-                Mesh3d::from(cube_mesh.clone()),
-                MeshMaterial3d(materials.add(FlatMaterial {
-                    color: LinearRgba::new(1.0, 0.0, 0.0, 1.0),
-                    texture: Some(cube_tex.get_handle()),
-                    alpha_mode: AlphaMode::Opaque,
-                })),
-                Transform::from_xyz(i as f32, 0.25, j as f32).with_scale(Vec3::splat(0.5)),
-                Cube,
-            ));
-        }
-    }
+    // for i in -10..=10 {
+    //     for j in -10..=10 {
+    //         commands.spawn((
+    //             Mesh3d::from(cube_mesh.clone()),
+    //             MeshMaterial3d(materials.add(FlatMaterial {
+    //                 color: LinearRgba::new(1.0, 0.0, 0.0, 1.0),
+    //                 texture: Some(cube_tex.get_handle()),
+    //                 alpha_mode: AlphaMode::Opaque,
+    //             })),
+    //             Transform::from_xyz(i as f32, 0.25, j as f32).with_scale(Vec3::splat(0.5)),
+    //             Cube,
+    //         ));
+    //     }
+    // }
+    commands.spawn((
+        Mesh3d::from(cube_mesh.clone()),
+        MeshMaterial3d(materials.add(FlatMaterial {
+            color: LinearRgba::new(1.0, 0.0, 0.0, 1.0),
+            texture: Some(cube_tex.get_handle()),
+            alpha_mode: AlphaMode::Opaque,
+        })),
+        Transform::from_xyz(0.0, 0.25, 0.0).with_scale(Vec3::splat(0.5)),
+        Cube,
+    ));
 }
 
 fn cube_click_detect(
@@ -78,7 +88,7 @@ fn cube_click_detect(
             Option<&mut MeshMaterial3d<FlatMaterial>>,
             Option<&mut MeshMaterial3d<StandardMaterial>>,
         ),
-        (With<Cube>, Without<MaterialOverride>),
+        (With<Cube>, With<DynamicMaterial>),
     >,
 ) {
     let (p_trans, action) = players.single().unwrap();

@@ -33,16 +33,17 @@ impl Material for FlatMaterial {
     }
 }
 
-/// A flag component to force the given Material, not shifting with flat / shaded
+/// A flag component to enable shaded / flat shader dynamics
 #[derive(Component)]
-pub struct MaterialOverride;
+#[derive(Default)]
+pub struct DynamicMaterial;
 
 pub fn set_materials(
     mut commands: Commands,
     mut f_mats: ResMut<Assets<FlatMaterial>>,
     mut s_mats: ResMut<Assets<StandardMaterial>>,
-    std_entities: Query<(Entity, &MeshMaterial3d<StandardMaterial>), Without<MaterialOverride>>,
-    flat_entities: Query<(Entity, &MeshMaterial3d<FlatMaterial>), Without<MaterialOverride>>,
+    std_entities: Query<(Entity, &MeshMaterial3d<StandardMaterial>), With<DynamicMaterial>>,
+    flat_entities: Query<(Entity, &MeshMaterial3d<FlatMaterial>), With<DynamicMaterial>>,
     g_set: Res<GameSettings>,
 ) {
     if g_set.contains(GameSettings::FLAT) {

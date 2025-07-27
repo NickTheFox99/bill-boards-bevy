@@ -1,4 +1,3 @@
-#![feature(let_chains)]
 mod billboard;
 mod cube;
 mod display;
