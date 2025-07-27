@@ -7,8 +7,11 @@ mod grid;
 mod player;
 mod ui;
 mod smile;
+mod physic_objects;
+mod wyatt;
 
-use crate::flat::FlatMaterial;
+use bevy::color::palettes::css::WHITE;
+use crate::flat::{DynamicMaterial, FlatMaterial};
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 use bevy::render::render_resource::Extent3d;
@@ -34,7 +37,9 @@ bitflags! {
 
 impl Default for GameSettings {
     fn default() -> Self {
-        GameSettings::COLOR_QUANTIZE | GameSettings::FLAT
+        GameSettings::COLOR_QUANTIZE |
+        GameSettings::FLAT
+        // Self::empty()
     }
 }
 
@@ -70,6 +75,7 @@ fn main() {
             player::plugin,
             display::plugin,
             cube::plugin,
+            wyatt::plugin,
             ui::plugin,
             flat::plugin,
             smile::plugin,
@@ -94,6 +100,7 @@ fn main() {
 }
 
 fn setup(
+    game_settings: Res<GameSettings>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -108,8 +115,17 @@ fn setup(
             unlit: true,
             ..default()
         })),
+        DynamicMaterial,
         Transform::from_scale(Vec3::splat(10.0)),
     ));
+
+    if(game_settings.contains(GameSettings::FLAT)) {
+        commands.insert_resource(AmbientLight {
+            color: WHITE.into(),
+            brightness: 4000.0,
+            ..default()
+        });
+    }
 }
 
 fn toggle_grab_cursor(mut window_query: Query<&mut Window, With<PrimaryWindow>>) {
