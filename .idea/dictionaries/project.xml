@@ -3,6 +3,8 @@
     <words>
       <w>boid</w>
       <w>hcells</w>
+      <w>quat</w>
+      <w>sinphase</w>
     </words>
   </dictionary>
 </component>
