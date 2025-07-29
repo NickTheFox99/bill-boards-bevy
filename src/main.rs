@@ -8,6 +8,8 @@ mod ui;
 mod smile;
 mod physic_objects;
 mod wyatt;
+mod lawson;
+mod sinphase;
 
 use bevy::color::palettes::css::WHITE;
 use crate::flat::{DynamicMaterial, FlatMaterial};
@@ -75,6 +77,8 @@ fn main() {
             display::plugin,
             cube::plugin,
             wyatt::plugin,
+            lawson::plugin,
+            sinphase::plugin,
             ui::plugin,
             flat::plugin,
             smile::plugin,

@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
 use bevy::render::view::RenderLayers;
 use leafwing_input_manager::prelude::*;
-use std::f32::consts::{FRAC_PI_2, FRAC_PI_4};
+use std::f32::consts::{FRAC_PI_2, FRAC_PI_4, PI};
 use bevy::window::WindowEvent::KeyboardInput;
 
 const PLAYER_SPEED: f32 = 5.4;
@@ -91,6 +91,7 @@ fn setup(mut commands: Commands, render_tex: Res<RenderTex>) {
         Projection::from(PerspectiveProjection {
             fov: FRAC_PI_4,
             aspect_ratio: 4.0 / 3.0,
+            near: 0.0001,
             ..default()
         }),
         Transform::from_xyz(5.0, 1.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),

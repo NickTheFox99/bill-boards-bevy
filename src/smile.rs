@@ -1,32 +1,15 @@
-use std::f32::consts::TAU;
-
 use super::*;
 use bevy::{image::*, prelude::*};
+use crate::sinphase::SinPhase;
 
 const CENTER_BILL_POS: Vec3 = Vec3::new(0.0, 1.0, 0.0);
 
-#[derive(Resource)]
-struct SinPhase(Timer);
 
 #[derive(Component)]
 struct Smile;
 
-impl SinPhase {
-    fn new() -> Self {
-        SinPhase(Timer::from_seconds(TAU / 7.5, TimerMode::Repeating))
-    }
-}
-
-impl Default for SinPhase {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 pub fn plugin(app: &mut App) {
-    app.init_resource::<SinPhase>();
     app.add_systems(Startup, setup);
-    app.add_systems(PreUpdate, tick);
     app.add_systems(Update, bob);
 }
 
@@ -53,15 +36,11 @@ fn setup(
         })),
         Transform::from_translation(CENTER_BILL_POS),
         Smile,
+        SinPhase::default(),
     ));
 }
 
-fn bob(mut faces: Query<&mut Transform, With<Smile>>, phase: ResMut<SinPhase>) {
-    let mut face = faces.single_mut().unwrap();
-
-    face.translation = CENTER_BILL_POS + Vec3::Y * (phase.0.elapsed_secs() * 7.5).sin() / 7.5;
-}
-
-fn tick(mut phase: ResMut<SinPhase>, time: Res<Time>) {
-    phase.0.tick(time.delta());
+fn bob(mut faces: Query<(&mut Transform, &SinPhase), With<Smile>>) {
+    let (mut face, phase) = faces.single_mut().unwrap();
+    face.translation = CENTER_BILL_POS + Vec3::Y * phase.get_phase();
 }
