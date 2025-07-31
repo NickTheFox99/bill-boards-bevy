@@ -4,6 +4,11 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release'
+        required: true
 
 jobs:
   build:
@@ -17,6 +22,12 @@ jobs:
           - wasm32-unknown-unknown
 
     steps:
+      - name: Update Cargo.toml version
+        run: |
+          TAG_NAME=${{ github.event.inputs.tag || github.ref_name }}
+          VERSION=${TAG_NAME//v/}  # Remove 'v' prefix if present
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -32,6 +43,17 @@ jobs:
           if [[ "${{ matrix.target }}" == "x86_64-pc-windows-gnu" ]]; then
             sudo pacman -S --noconfirm mingw-w64-gcc
           fi
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git/db
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
 
       - name: Build for ${{ matrix.target }}
         if: matrix.target != 'wasm32-unknown-unknown'
@@ -52,11 +74,31 @@ jobs:
           rm -rv ./out/assets/
           zip -rv ./out/web_build.zip ./out/*
 
+      - name: Check for Existing Release
+        id: check_release
+        run: |
+          TAG_NAME=${{ github.event.inputs.tag || github.ref_name }}
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+          echo "::set-output name=exists::$(echo $RESPONSE | jq '.id')"
+
+      - name: Create Release
+        id: create_release
+        if: steps.check_release.outputs.exists == 'null'
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          release_name: Release ${{ github.event.inputs.tag || github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Windows Binary
         if: matrix.target == 'x86_64-pc-windows-gnu'
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target/${{ matrix.target }}/release/bill-boards-bevy.exe
           asset_name: ${matrix.target}-standalone.exe
           asset_content_type: application/vnd.microsoft.portable-executable
@@ -65,7 +107,7 @@ jobs:
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target/${{ matrix.target }}/release/bill-boards-bevy
           asset_name: ${matrix.target}-standalone
           asset_content_type: application/x-pie-executable
@@ -74,7 +116,7 @@ jobs:
         if: matrix.target == 'wasm32-unknown-unknown'
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/web_build.zip
           asset_name: web-standalone.zip
           asset_content_type: application/zip
