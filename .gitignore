@@ -4,3 +4,4 @@
 /web/bill-boards-bevy_bg.wasm
 /web/bill-boards-bevy_bg.wasm.d.ts
 /.idea
+/out/*
