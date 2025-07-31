@@ -6,13 +6,22 @@
             width: 100%;
             height: 100%;
         }
+        body {
+            width: 100%;
+            height: 100%;
+        }
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
     </style>
     <title>Game</title>
 </head>
 <body style="margin: 0;">
 <script type="module">
     import './restart-audio-context.js'
-    import init from './build/bill-boards-bevy.js'
+    import init from './bill-boards-bevy.js'
 
     init().catch((error) => {
         if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
