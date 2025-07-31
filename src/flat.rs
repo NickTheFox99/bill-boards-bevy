@@ -57,8 +57,7 @@ pub fn set_materials(
             commands
                 .entity(e)
                 .remove::<MeshMaterial3d<StandardMaterial>>()
-                .insert(n_mat)
-                .log_components();
+                .insert(n_mat);
         }
     } else {
         for (e, mat) in flat_entities {
@@ -73,8 +72,7 @@ pub fn set_materials(
             commands
                 .entity(e)
                 .remove::<MeshMaterial3d<FlatMaterial>>()
-                .insert(n_mat)
-                .log_components();
+                .insert(n_mat);
         }
     }
 }

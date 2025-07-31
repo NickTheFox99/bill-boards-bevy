@@ -58,7 +58,7 @@ fn main() {
                 primary_window: Some(Window {
                     title: "Game".into(),
                     name: Some("game.app".into()),
-                    resolution: (320., 240.).into(),
+                    // resolution: (320., 240.).into(),
                     present_mode: PresentMode::Fifo,
                     window_theme: Some(WindowTheme::Light),
                     enabled_buttons: EnabledButtons {

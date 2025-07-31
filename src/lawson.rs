@@ -9,16 +9,14 @@ pub fn plugin(app: &mut App) {
 
 #[derive(Component)]
 struct Lawson {
-    y: f32
+    y: f32,
 }
 
 fn setup(mut commands: Commands, assets: Res<AssetServer>) {
     commands.spawn((
         SceneRoot(assets.load(GltfAssetLabel::Scene(0).from_asset("lawson.glb"))),
-        Lawson {
-            y: 0.7,
-        },
-        Transform::from_scale(Vec3::splat(1.0/5.0)).with_translation(Vec3::new(-5.0,0.7,2.0)),
+        Lawson { y: 0.7 },
+        Transform::from_scale(Vec3::splat(1.0 / 5.0)).with_translation(Vec3::new(-5.0, 0.7, 2.0)),
         crate::sinphase::SinPhase::new(0.25),
     ));
 }
@@ -33,7 +31,9 @@ fn update(
 
     let angle_to_player = Transform::from_translation(lawson_pos.translation)
         .looking_at(player.translation, Dir3::Y)
-        .rotation.to_euler(EulerRot::YXZ).0;
+        .rotation
+        .to_euler(EulerRot::YXZ)
+        .0;
 
     let current_quat = lawson_pos.rotation;
     let target_quat = Quat::from_euler(EulerRot::YXZ, angle_to_player, 0.0, 0.0);
@@ -44,6 +44,9 @@ fn update(
     let dist = lawson_pos.translation.distance_squared(player.translation);
 
     let f = lawson_pos.forward();
-    lawson_pos.translation += f * time.delta_secs() * (dist - 0.1) * 1.4;
-    lawson_pos.translation.y = lawson.y + (sinphase.get_phase() / 100.0) * (dist - 0.1125).clamp(0.0, f32::INFINITY);
+    if !(time.delta_secs() > 1.0/24.0) {
+        lawson_pos.translation += f * time.delta_secs() * (dist - 0.1) * 1.4;
+    }
+    lawson_pos.translation.y =
+        lawson.y + (sinphase.get_phase() / 100.0) * (dist - 0.1125).clamp(0.0, f32::INFINITY);
 }

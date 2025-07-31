@@ -1,6 +1,6 @@
 /target
-/out/bill-boards-bevy.d.ts
-/out/bill-boards-bevy.js
-/out/bill-boards-bevy_bg.wasm
-/out/bill-boards-bevy_bg.wasm.d.ts
+/web/bill-boards-bevy.d.ts
+/web/bill-boards-bevy.js
+/web/bill-boards-bevy_bg.wasm
+/web/bill-boards-bevy_bg.wasm.d.ts
 /.idea

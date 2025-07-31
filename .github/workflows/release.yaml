@@ -51,7 +51,7 @@ env:
   assets_path: assets
 
   # The itch.io project to upload to in the format `user-name/project-name`.
-  # There will be no upload to itch.io if this is commented out.
+  # There will be no upload to itch.io if this is commented web.
 #  itch_page: the-bevy-flock/bevy-new-2d
 
   # The ID of the app produced by this workflow.
@@ -61,22 +61,22 @@ env:
 
   # The base filename of the binary in the package produced by this workflow.
   # Applies to Windows, macOS, and Linux releases.
-  # Defaults to `cargo_build_binary_name` if commented out.
+  # Defaults to `cargo_build_binary_name` if commented web.
   #app_binary_name: bevy_new_2d
 
   # The name of the `.zip` or `.dmg` file produced by this workflow.
-  # Defaults to `app_binary_name` if commented out.
+  # Defaults to `app_binary_name` if commented web.
   app_package_name: bill-boards
 
   # The display name of the app produced by this workflow.
   # Applies to macOS releases.
-  # Defaults to `app_package_name` if commented out.
+  # Defaults to `app_package_name` if commented web.
   app_display_name: Bill Boards Game
 
   # The short display name of the app produced by this workflow.
   # Applies to macOS releases.
   # Must be 15 or fewer characters: <https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundlename>.
-  # Defaults to `app_display_name` if commented out.
+  # Defaults to `app_display_name` if commented web.
   #app_short_name: BillBoards
 
   # Before enabling LFS, please take a look at GitHub's documentation for costs and quota limits:

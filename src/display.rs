@@ -113,7 +113,7 @@ fn setup(
         },
         RenderLayers::layer(1),
     ));
-    if cfg!(target_arch = "wasm32") || !g_set.contains(crate::GameSettings::COLOR_QUANTIZE) {
+    if !g_set.contains(crate::GameSettings::COLOR_QUANTIZE) {
         display.insert(MeshMaterial2d(materials.add(ColorMaterial {
             texture: Some(render_tex.get_handle()),
             ..default()
