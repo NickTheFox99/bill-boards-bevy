@@ -38,7 +38,8 @@ jobs:
             sudo pacman -S --noconfirm mingw-w64-gcc
           fi
           if [[ "${{ matrix.target }}" == "wasm32-unknown-unknown" ]]; then
-            cargo install --git https://github.com/TheBevyFlock/bevy_cli --branch main --locked bevy_cli
+            cargo install cargo-binstall
+            cargo binstall --git https://github.com/TheBevyFlock/bevy_cli --version 0.1.0-alpha.1 --locked bevy_cli
           fi
 
       - name: Cache Cargo registry
