@@ -22,12 +22,6 @@ jobs:
           - wasm32-unknown-unknown
 
     steps:
-      - name: Update Cargo.toml version
-        run: |
-          TAG_NAME=${{ github.event.inputs.tag || github.ref_name }}
-          VERSION=${TAG_NAME//v/}  # Remove 'v' prefix if present
-          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" Cargo.toml
-
       - name: Checkout code
         uses: actions/checkout@v2
 
