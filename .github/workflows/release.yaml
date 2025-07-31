@@ -37,6 +37,9 @@ jobs:
           if [[ "${{ matrix.target }}" == "x86_64-pc-windows-gnu" ]]; then
             sudo pacman -S --noconfirm mingw-w64-gcc
           fi
+          if [[ "${{ matrix.target }}" == "wasm32-unknown-unknown" ]]; then
+            cargo install --git https://github.com/TheBevyFlock/bevy_cli --branch main --locked bevy_cli
+          fi
 
       - name: Cache Cargo registry
         uses: actions/cache@v4
@@ -57,8 +60,7 @@ jobs:
       - name: Build WebAssembly using Bevy CLI
         if: matrix.target == 'wasm32-unknown-unknown'
         run: |
-          cargo install --git https://github.com/TheBevyFlock/bevy_cli --branch main --locked bevy_cli
-          bevy b -r web -b
+          bevy b -r --yes web -b
 
       - name: Prepare Web Assets
         if: matrix.target == 'wasm32-unknown-unknown'
