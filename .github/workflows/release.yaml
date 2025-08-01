@@ -84,7 +84,7 @@ jobs:
         if: matrix.target == 'wasm32-unknown-unknown'
         run: |
           mkdir -p ./out
-          cp -rv ./target/bevy_web/web/bill-boards-bevy/* ./out/
+          cp -rv ./target/bevy_web/web_release/bill-boards-bevy/* ./out/
           rm -rv ./out/assets/
           zip -rv ./out/web_build.zip ./out/*
 
@@ -108,11 +108,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get Release Upload URL
+        id: get_upload_url
+        run: |
+          TAG_NAME=${{ github.event.inputs.tag || github.ref_name }}
+          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG_NAME")
+          echo "::set-output name=upload_url::$(echo $RESPONSE | jq -r '.upload_url')"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Windows Binary
         if: matrix.target == 'x86_64-pc-windows-gnu'
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
           asset_path: target/${{ matrix.target }}/release/bill-boards-bevy.exe
           asset_name: ${matrix.target}-standalone.exe
           asset_content_type: application/vnd.microsoft.portable-executable
@@ -121,7 +131,7 @@ jobs:
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
           asset_path: target/${{ matrix.target }}/release/bill-boards-bevy
           asset_name: ${matrix.target}-standalone
           asset_content_type: application/x-pie-executable
