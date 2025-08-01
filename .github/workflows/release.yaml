@@ -129,6 +129,8 @@ jobs:
           asset_path: target/${{ matrix.target }}/release/bill-boards-bevy.exe
           asset_name: ${matrix.target}-standalone.exe
           asset_content_type: application/vnd.microsoft.portable-executable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Linux Binary
         if: matrix.target == 'x86_64-unknown-linux-gnu'
@@ -138,6 +140,8 @@ jobs:
           asset_path: target/${{ matrix.target }}/release/bill-boards-bevy
           asset_name: ${matrix.target}-standalone
           asset_content_type: application/x-pie-executable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Web Build
         if: matrix.target == 'wasm32-unknown-unknown'
@@ -147,3 +151,5 @@ jobs:
           asset_path: ./out/web_build.zip
           asset_name: web-standalone.zip
           asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
