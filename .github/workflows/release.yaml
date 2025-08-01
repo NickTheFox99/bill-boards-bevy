@@ -56,12 +56,12 @@ jobs:
       - name: Build for ${{ matrix.target }}
         if: matrix.target != 'wasm32-unknown-unknown'
         run: |
-          cargo build --target ${{ matrix.target }} --release
+          cargo build --target ${{ matrix.target }} --release -j 1
 
       - name: Build WebAssembly using Bevy CLI
         if: matrix.target == 'wasm32-unknown-unknown'
         run: |
-          bevy b -r --yes web -b
+          bevy b -r --yes -j 1 web -b
 
       - name: Prepare Web Assets
         if: matrix.target == 'wasm32-unknown-unknown'
