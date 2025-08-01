@@ -11,7 +11,7 @@ on:
     inputs:
       tag:
         description: 'Tag to release'
-        required: true
+        required: false
       jobs:
         description: 'Number of parallel jobs running in `cargo build`'
         required: false
