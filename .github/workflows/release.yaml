@@ -86,9 +86,8 @@ jobs:
       - name: Prepare Web Assets
         if: matrix.target == 'wasm32-unknown-unknown'
         run: |
-          tree .
           mkdir -p ./out
-          cp -rv ./target/bevy_web/web_release/bill-boards-bevy/* ./out/
+          cp -rv ./target/bevy_web/web-release/bill-boards-bevy/* ./out/
           rm -rv ./out/assets/
           zip -rv ./out/web_build.zip ./out/*
 
