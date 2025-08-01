@@ -143,7 +143,7 @@ jobs:
         if: matrix.target == 'wasm32-unknown-unknown'
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
           asset_path: ./out/web_build.zip
           asset_name: web-standalone.zip
           asset_content_type: application/zip
