@@ -9,6 +9,10 @@ on:
       tag:
         description: 'Tag to release'
         required: true
+      jobs:
+        description: 'Number of parallel jobs running in `cargo build`'
+        required: false
+        type: number
 
 jobs:
   build:
@@ -56,12 +60,25 @@ jobs:
       - name: Build for ${{ matrix.target }}
         if: matrix.target != 'wasm32-unknown-unknown'
         run: |
-          cargo build --target ${{ matrix.target }} --release -j 1
+          if [ -z "$JOBS" ]; then
+            cargo build --target ${{ matrix.target }} --release
+          else
+            cargo build --target ${{ matrix.target }} --release -j "$JOBS"
+          fi
+        env:
+          JOBS: ${{ inputs.jobs }}
+
 
       - name: Build WebAssembly using Bevy CLI
         if: matrix.target == 'wasm32-unknown-unknown'
         run: |
-          bevy b -r --yes -j 1 web -b
+          if [ -z "$JOBS" ]; then
+            bevy b -r --yes web -b
+          else 
+            bevy b -r --yes -j "$JOBS" web -b
+          fi
+        env:
+          JOBS: ${{ inputs.jobs }}
 
       - name: Prepare Web Assets
         if: matrix.target == 'wasm32-unknown-unknown'
