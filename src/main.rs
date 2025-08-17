@@ -3,16 +3,16 @@ mod cube;
 mod display;
 mod flat;
 mod grid;
-mod player;
-mod ui;
-mod smile;
-mod physic_objects;
-mod wyatt;
 mod lawson;
+mod physic_objects;
+mod player;
 mod sinphase;
+mod smile;
+mod ui;
+mod wyatt;
 
-use bevy::color::palettes::css::WHITE;
 use crate::flat::{DynamicMaterial, FlatMaterial};
+use bevy::color::palettes::css::WHITE;
 use bevy::input::common_conditions::input_just_pressed;
 use bevy::prelude::*;
 use bevy::render::render_resource::Extent3d;
@@ -38,8 +38,7 @@ bitflags! {
 
 impl Default for GameSettings {
     fn default() -> Self {
-        GameSettings::COLOR_QUANTIZE |
-        GameSettings::FLAT
+        GameSettings::COLOR_QUANTIZE | GameSettings::FLAT
         // Self::empty()
     }
 }
@@ -122,7 +121,7 @@ fn setup(
         Transform::from_scale(Vec3::splat(10.0)),
     ));
 
-    if(game_settings.contains(GameSettings::FLAT)) {
+    if game_settings.contains(GameSettings::FLAT) {
         commands.insert_resource(AmbientLight {
             color: WHITE.into(),
             brightness: 4000.0,

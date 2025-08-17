@@ -1,8 +1,6 @@
 use crate::GameSettings;
 use bevy::prelude::*;
-use bevy::render::render_resource::{
-    AsBindGroup, ShaderRef,
-};
+use bevy::render::render_resource::{AsBindGroup, ShaderRef};
 
 pub fn plugin(app: &mut App) {
     app.add_plugins(MaterialPlugin::<FlatMaterial>::default());
@@ -34,8 +32,7 @@ impl Material for FlatMaterial {
 }
 
 /// A flag component to enable shaded / flat shader dynamics
-#[derive(Component)]
-#[derive(Default)]
+#[derive(Component, Default)]
 pub struct DynamicMaterial;
 
 pub fn set_materials(

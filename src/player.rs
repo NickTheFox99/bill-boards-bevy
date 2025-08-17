@@ -4,14 +4,15 @@ use bevy::prelude::*;
 use bevy::render::camera::RenderTarget;
 use bevy::render::view::RenderLayers;
 use leafwing_input_manager::prelude::*;
-use std::f32::consts::{FRAC_PI_2, FRAC_PI_4, PI};
-use bevy::window::WindowEvent::KeyboardInput;
+use std::f32::consts::{FRAC_PI_2, FRAC_PI_4};
 
-const PLAYER_SPEED: f32 = 5.4;
 pub fn plugin(app: &mut App) {
     app.add_plugins(InputManagerPlugin::<PlayerAction>::default());
     app.add_systems(Startup, setup);
-    app.add_systems(Update, ((movement_input, physics, stepping).chain(), mouselook));
+    app.add_systems(
+        Update,
+        ((movement_input, physics, stepping).chain(), mouselook),
+    );
 }
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
@@ -54,6 +55,8 @@ impl PlayerAction {
 #[derive(Component)]
 #[require(Transform)]
 pub struct Player {
+    move_speed: f32,
+    sprint_speed: f32,
     yaw: f32,
     pitch: f32,
     move_input: Option<Vec2>,
@@ -65,6 +68,8 @@ pub struct Player {
 impl Default for Player {
     fn default() -> Self {
         Player {
+            move_speed: 5.4,
+            sprint_speed: 8.1,
             yaw: 0.0,
             pitch: 0.0,
             move_input: None,
@@ -136,7 +141,15 @@ fn movement_input(
     let rotation = Quat::from_rotation_y(player.yaw);
     direction = rotation.mul_vec3(direction);
 
-    player.move_input = Some(direction.xz() * time.delta_secs() * PLAYER_SPEED);
+    let move_factor;
+
+    if action.pressed(&PlayerAction::Sprint) {
+        move_factor = player.sprint_speed;
+    } else {
+        move_factor = player.move_speed;
+    }
+
+    player.move_input = Some(direction.xz() * time.delta_secs() * move_factor);
 }
 
 fn physics(
@@ -180,14 +193,20 @@ fn stepping(
     let mut highest_point: f32 = f32::NEG_INFINITY;
     let p_shape = parry2d::shape::Ball::new(player.fat + player.step_dist);
     for cube in cubes.iter() {
-        let boid = parry2d::shape::Cuboid::new(parry2d::na::Vector2::new(cube.scale.x, cube.scale.z) * 0.5);
+        let boid = parry2d::shape::Cuboid::new(
+            parry2d::na::Vector2::new(cube.scale.x, cube.scale.z) * 0.5,
+        );
 
         if !parry2d::query::intersection_test(
             &parry2d::math::Translation::new(trans.translation.x, trans.translation.z).into(),
             &p_shape,
             &parry2d::math::Translation::new(cube.translation.x, cube.translation.z).into(),
             &boid,
-        ).unwrap() {continue;}
+        )
+        .unwrap()
+        {
+            continue;
+        }
 
         let height = cube.translation.y + cube.scale.y * 0.5;
         if height > highest_point {

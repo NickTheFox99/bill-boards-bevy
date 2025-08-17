@@ -1,5 +1,5 @@
-use std::f32::consts::TAU;
 use bevy::prelude::*;
+use std::f32::consts::TAU;
 
 pub(crate) fn plugin(app: &mut App) {
     app.add_systems(PreUpdate, tick);

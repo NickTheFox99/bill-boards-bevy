@@ -1,4 +1,4 @@
-use crate::{player, MainCamera};
+use crate::{MainCamera, player};
 use bevy::prelude::*;
 use leafwing_input_manager::prelude::ActionState;
 use parry3d::math::{Isometry, Point};

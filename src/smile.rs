@@ -1,9 +1,8 @@
 use super::*;
-use bevy::{image::*, prelude::*};
 use crate::sinphase::SinPhase;
+use bevy::{image::*, prelude::*};
 
 const CENTER_BILL_POS: Vec3 = Vec3::new(0.0, 1.0, 0.0);
-
 
 #[derive(Component)]
 struct Smile;

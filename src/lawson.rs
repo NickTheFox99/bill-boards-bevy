@@ -44,7 +44,7 @@ fn update(
     let dist = lawson_pos.translation.distance_squared(player.translation);
 
     let f = lawson_pos.forward();
-    if !(time.delta_secs() > 1.0/24.0) {
+    if !(time.delta_secs() > 1.0 / 24.0) {
         lawson_pos.translation += f * time.delta_secs() * (dist - 0.1) * 1.4;
     }
     lawson_pos.translation.y =

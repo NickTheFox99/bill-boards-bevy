@@ -14,7 +14,7 @@ fn setup(mut commands: Commands, assets: Res<AssetServer>) {
     commands.spawn((
         SceneRoot(assets.load(GltfAssetLabel::Scene(0).from_asset("wyatt.glb"))),
         Wyatt,
-        Transform::from_scale(Vec3::splat(1.0/7.0)).with_translation(Vec3::new(2.0,0.7,2.0))
+        Transform::from_scale(Vec3::splat(1.0 / 7.0)).with_translation(Vec3::new(2.0, 0.7, 2.0)),
     ));
 }
 
@@ -28,7 +28,9 @@ fn update(
 
     let angle_to_player = Transform::from_translation(wyatt.translation)
         .looking_at(player.translation, Dir3::Y)
-        .rotation.to_euler(EulerRot::YXZ).0;
+        .rotation
+        .to_euler(EulerRot::YXZ)
+        .0;
 
     let current_quat = wyatt.rotation;
     let target_quat = Quat::from_euler(EulerRot::YXZ, angle_to_player, 0.0, 0.0);
@@ -40,5 +42,4 @@ fn update(
 
     let f = wyatt.forward();
     wyatt.translation += f * time.delta_secs() * (dist - 1.0) / 5.0;
-
 }
